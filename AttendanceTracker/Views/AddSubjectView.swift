@@ -11,10 +11,20 @@ struct AddSubjectView: View {
     @Environment(\.modelContext) private var context
     @Environment(\.dismiss) private var dismiss
     
+    var subject: Subject?
+    
     @State private var name : String = ""
     @State private var selectedDays : [Weekday] = []
     
-    var isValid: Bool {
+    private var title: String {
+        if subject != nil{
+            "Edit Subject"
+        } else {
+            "Add Subject"
+        }
+    }
+    
+    private var isSaveButtonValid: Bool {
         !name.trimmingCharacters(in: .whitespaces).isEmpty &&
         !selectedDays.isEmpty
     }
@@ -49,8 +59,20 @@ struct AddSubjectView: View {
                         )
                     }
                 }
+                
+                if let subject {
+                    Section {
+                        Button(role: .destructive) {
+                            // shows in destructive style when subject is not nil
+                            context.delete(subject)
+                            dismiss()
+                        } label: {
+                            Text("Delete Subject")
+                        }
+                    }
+                }
             }
-            .navigationTitle("Add Subject")
+            .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -60,19 +82,25 @@ struct AddSubjectView: View {
                 }
                 ToolbarItem(placement: .confirmationAction, content: {
                     Button("Save") {
-                        let subject = Subject(name: name, days: selectedDays)
-                        context.insert(subject)
+                        if let subject {
+                            subject.name = name
+                            subject.days = selectedDays
+                        } else {
+                            let subject = Subject(name: name, days: selectedDays)
+                            context.insert(subject)
+                        }
                         dismiss()
-                    }.disabled(!isValid)
+                    }.disabled(!isSaveButtonValid)
                 })
             }
         }
-//        .onAppear {
-//            if let subject {
-//                name = subject.name
-//                selectedDays = subject.days
-//            }
-//        }
+        .onAppear {
+            // When a subject is selected, preload values (Editing view)
+            if let subject {
+                name = subject.name
+                selectedDays = subject.days
+            }
+        }
     }
 }
 

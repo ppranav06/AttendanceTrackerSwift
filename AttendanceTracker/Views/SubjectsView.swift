@@ -15,19 +15,27 @@ struct SubjectsView: View {
     @State private var showingAddSubject = false
     @State private var showingIndividualSubject = false
     
-    var selectedSubject: Subject?
+    @State var selectedSubject: Subject?
 
     var body: some View {
         NavigationStack {
             Text("Count: \(subjects.count)")
-            List(subjects) { subject in
-                    Text(subject.name)
+            List {
+                ForEach(subjects) { subject in
+                    Button{
+                        selectedSubject = subject
+                        showingAddSubject = true
+                    } label: {
+                        Text(subject.name)
+                    }
+                }
             }
 
             .navigationTitle("Subjects")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button {
+                        selectedSubject = nil // for adding a new subject
                         showingAddSubject = true
                     } label: {
                         Image(systemName: "plus")
@@ -35,7 +43,7 @@ struct SubjectsView: View {
                 }
             }
             .sheet(isPresented: $showingAddSubject){
-                AddSubjectView()
+                AddSubjectView(subject: selectedSubject)
             }
         }
     }
