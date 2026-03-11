@@ -1,0 +1,10 @@
+# Xcode user-specific
+*.xcuserdata/
+*.xcschemes/ (except xcshareddata ones)
+project.xcworkspace/xcuserdata/
+.DS_Store
+build/
+DerivedData/
+# Swift Package Manager
+.swiftpm/
+
