@@ -15,6 +15,7 @@ struct AddSubjectView: View {
     
     @State private var name : String = ""
     @State private var selectedDays : [Weekday] = []
+    @State private var showingDeleteButton : Bool = false
     
     private var title: String {
         if subject != nil{
@@ -61,17 +62,17 @@ struct AddSubjectView: View {
                 }
                 
                 if let subject {
-                    Section {
+                    Section("Delete") {
                         Button(role: .destructive) {
                             // shows in destructive style when subject is not nil
-                            context.delete(subject)
-                            dismiss()
+                            showingDeleteButton = true
                         } label: {
                             Text("Delete Subject")
                         }
                     }
                 }
             }
+            
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -93,6 +94,17 @@ struct AddSubjectView: View {
                     }.disabled(!isSaveButtonValid)
                 })
             }
+            .confirmationDialog(String("This will permanently delete the subject \"\(subject?.name ?? "")\"."), isPresented: $showingDeleteButton, titleVisibility: .visible) {
+                Button("Delete Subject", role: .destructive) {
+                    // no point of return
+                    if let subject {
+                        context.delete(subject)
+                        dismiss()
+                    }
+                }
+                Button("Cancel", role: .cancel) { }
+            }
+            
         }
         .onAppear {
             // When a subject is selected, preload values (Editing view)
