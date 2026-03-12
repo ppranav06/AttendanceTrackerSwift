@@ -14,6 +14,6 @@ struct AttendanceTrackerApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: [Subject.self, AttendanceRecord.self, AppSettings.self])
+        .modelContainer(for: [Subject.self, AttendanceRecord.self, AppSettings.self], inMemory: false)
     }
 }

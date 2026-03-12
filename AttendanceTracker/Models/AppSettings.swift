@@ -11,9 +11,18 @@ import SwiftData
 @Model
 class AppSettings {
 
-    var attendanceThreshold: Double
+    var attendanceThresholdOverall: Double
+    var isPerSubjectAttendanceNeeded : Bool
+    var attendanceThresholdPerSubject: Double
+    var notificationsEnabled: Bool
 
-    init(attendanceThreshold: Double = 75) {
-        self.attendanceThreshold = attendanceThreshold
+    init(attendanceThresholdOverall: Double = 75,
+         isPerSubjectAttendanceNeeded: Bool = true,
+         attendanceThresholdPerSubject: Double = 75,
+         notificationsEnabled: Bool = true) {
+        self.attendanceThresholdOverall = attendanceThresholdOverall
+        self.isPerSubjectAttendanceNeeded = isPerSubjectAttendanceNeeded
+        self.attendanceThresholdPerSubject = attendanceThresholdPerSubject
+        self.notificationsEnabled = notificationsEnabled
     }
 }
