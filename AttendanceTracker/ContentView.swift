@@ -9,16 +9,24 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            AttendanceDaily()
+                .tabItem {
+                    Label("Attendance", systemImage: "house.fill")
+                }
+            SubjectsView()
+                .tabItem {
+                    Label("Subjects", systemImage: "books.vertical.fill")
+                }
+            SettingsView()
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape.fill")
+                }
         }
-        .padding()
     }
 }
 
 #Preview {
     ContentView()
+        .modelContainer(for: [Subject.self, AttendanceRecord.self, AppSettings.self], inMemory: false)
 }
