@@ -27,6 +27,10 @@ struct ContentView: View {
 }
 
 #Preview {
+    let persistence = PersistenceController.shared
     ContentView()
-        .modelContainer(for: [Subject.self, AttendanceRecord.self, AppSettings.self], inMemory: false)
+        .environment(
+            \.managedObjectContext,
+             persistence.container.viewContext
+        )
 }

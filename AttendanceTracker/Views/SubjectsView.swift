@@ -9,8 +9,11 @@ import SwiftUI
 import SwiftData
 
 struct SubjectsView: View {
-    @Environment(\.modelContext) private var context
-    @Query private var subjects: [Subject]
+    @FetchRequest(
+        entity: Subject.entity(),
+        sortDescriptors: []
+    )
+    var subjects: FetchedResults<Subject>
     
     @State private var showingAddSubject = false
     @State private var showingIndividualSubject = false
@@ -26,7 +29,7 @@ struct SubjectsView: View {
                         selectedSubject = subject
                         showingAddSubject = true
                     } label: {
-                        Text(subject.name)
+                        Text(subject.name ?? "")
                     }
                 }
             }
@@ -50,6 +53,10 @@ struct SubjectsView: View {
 }
 
 #Preview {
+    let persistence = PersistenceController.shared
     SubjectsView()
-        .modelContainer(for: Subject.self, inMemory: false)
+        .environment(
+            \.managedObjectContext,
+             persistence.container.viewContext
+        )
 }

@@ -68,6 +68,11 @@ struct SettingsView: View {
 }
 
 #Preview {
+    let persistence = PersistenceController.shared
     SettingsView()
-        .modelContainer(for: AppSettings.self, inMemory: false)
+        .environment(
+            \.managedObjectContext,
+             persistence.container.viewContext
+        )
 }
+

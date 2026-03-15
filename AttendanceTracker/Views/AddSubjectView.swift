@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct AddSubjectView: View {
-    @Environment(\.modelContext) private var context
+    @Environment(\.managedObjectContext) private var viewContext
     @Environment(\.dismiss) private var dismiss
     
     var subject: Subject?
@@ -62,9 +62,9 @@ struct AddSubjectView: View {
                 }
                 
                 if let subject {
+                    // shows only while editing subject, that's why let subject
                     Section("Delete") {
                         Button(role: .destructive) {
-                            // shows in destructive style when subject is not nil
                             showingDeleteButton = true
                         } label: {
                             Text("Delete Subject")
@@ -87,8 +87,15 @@ struct AddSubjectView: View {
                             subject.name = name
                             subject.days = selectedDays
                         } else {
-                            let subject = Subject(name: name, days: selectedDays)
-                            context.insert(subject)
+                            let subject = Subject(context: viewContext)
+                            subject.id = UUID()
+                            subject.name = name
+                            subject.days = selectedDays
+                            do {
+                                try viewContext.save()
+                            } catch {
+                                print("Failed to save subject: \(error.localizedDescription)")
+                            }
                         }
                         dismiss()
                     }.disabled(!isSaveButtonValid)
@@ -98,7 +105,12 @@ struct AddSubjectView: View {
                 Button("Delete Subject", role: .destructive) {
                     // no point of return
                     if let subject {
-                        context.delete(subject)
+                        viewContext.delete(subject)
+                        do {
+                            try viewContext.save()
+                        } catch {
+                            print("Failed to delete subject: \(error.localizedDescription)")
+                        }
                         dismiss()
                     }
                 }
@@ -109,7 +121,7 @@ struct AddSubjectView: View {
         .onAppear {
             // When a subject is selected, preload values (Editing view)
             if let subject {
-                name = subject.name
+                name = subject.name ?? ""
                 selectedDays = subject.days
             }
         }
@@ -117,6 +129,10 @@ struct AddSubjectView: View {
 }
 
 #Preview {
+    let persistence = PersistenceController.shared
     AddSubjectView()
-        .modelContainer(for: Subject.self, inMemory:true)
+        .environment(
+            \.managedObjectContext,
+             persistence.container.viewContext
+        )
 }

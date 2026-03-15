@@ -6,14 +6,20 @@
 //
 
 import SwiftUI
-import SwiftData
 
 @main
 struct AttendanceTrackerApp: App {
+    let persistenceController = PersistenceController.shared
+    
     var body: some Scene {
         WindowGroup {
+            // adding persistence controller to ContentView via coredata
             ContentView()
+                .environment(
+                    \.managedObjectContext,
+                     persistenceController.container.viewContext
+                )
         }
-        .modelContainer(for: [Subject.self, AttendanceRecord.self, AppSettings.self], inMemory: false)
     }
+    
 }
